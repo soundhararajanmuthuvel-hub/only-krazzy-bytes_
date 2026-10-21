@@ -1,0 +1,6 @@
+{
+  "name": "Only KRAZZY Bytes - Food Products Wholesale & Retail Supplier",
+  "description": "Wholesale and retail food products distributor in Kumbakonam, Tamil Nadu. Premium ingredients, dairy, condiments, frozen foods, and bakery supplies for commercial food service businesses.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
