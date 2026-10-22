@@ -22,6 +22,19 @@ export const Brands: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeBrandModal, setActiveBrandModal] = useState<Brand | null>(null);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
+
+  const handleImageError = (id: string) => {
+    setFailedImages((prev) => ({ ...prev, [id]: true }));
+  };
+
+  const getBrandInitials = (name: string): string => {
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
 
   const categories: { key: BrandCategory; label: string; count?: number }[] = [
     { key: 'all', label: 'All Brands' },
@@ -36,7 +49,7 @@ export const Brands: React.FC = () => {
     return BRANDS.filter((brand) => {
       let matchesCategory = true;
       if (selectedCategory === 'featured') {
-        matchesCategory = Boolean(brand.isVerifiedPartner || brand.logoUrl);
+        matchesCategory = Boolean(brand.isVerifiedPartner || (brand.logoUrl && !failedImages[brand.id]));
       } else if (selectedCategory !== 'all') {
         matchesCategory = brand.category === selectedCategory;
       }
@@ -142,7 +155,7 @@ export const Brands: React.FC = () => {
               className="bg-white p-3 sm:p-4 rounded-xl shadow-2xs border border-neutral-200/80 hover:border-[#E91E63]/50 hover:shadow-md transition-all duration-200 flex flex-col justify-between text-center min-h-[148px] group relative cursor-pointer"
             >
               {/* Top status indicator */}
-              {brand.logoUrl && (
+              {brand.logoUrl && !failedImages[brand.id] && (
                 <div className="absolute top-2 right-2 flex items-center justify-center">
                   <span className="inline-flex items-center gap-0.5 text-[9px] font-bold text-[#E91E63] bg-[#FFF7FA] px-1.5 py-0.5 rounded border border-[#F0DCE5]">
                     <BadgeCheck className="w-3 h-3 text-[#E91E63]" />
@@ -156,20 +169,22 @@ export const Brands: React.FC = () => {
                 <div className={`h-16 w-full flex items-center justify-center p-2 mb-2 rounded-lg border transition-all duration-200 ${
                   brand.id === 'kelloggs'
                     ? 'bg-[#D0021B] border-[#D0021B] group-hover:brightness-105'
-                    : 'bg-neutral-50/80 border-neutral-100/80 group-hover:bg-white group-hover:border-[#E91E63]/20'
+                    : 'bg-white border-neutral-200/70 group-hover:border-[#E91E63]/30 shadow-2xs'
                 }`}>
-                  {brand.logoUrl ? (
+                  {brand.logoUrl && !failedImages[brand.id] ? (
                     <img
                       src={brand.logoUrl}
                       alt={`${brand.name} logo`}
                       className={`max-h-12 max-w-[85%] object-contain group-hover:scale-105 transition-transform duration-200 ${
                         brand.id === 'kelloggs' ? 'brightness-100' : ''
                       }`}
-                      loading="lazy"
+                      onError={() => handleImageError(brand.id)}
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-neutral-100 border border-neutral-200 flex items-center justify-center text-[#171717] font-display font-extrabold text-sm group-hover:bg-[#FFF7FA] group-hover:text-[#E91E63] group-hover:border-[#F0DCE5] transition-colors">
-                      {brand.name.slice(0, 2).toUpperCase()}
+                    <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#FFF5F8] via-[#FAF7F8] to-[#F5EEF2] border border-[#E91E63]/25 shadow-2xs flex items-center justify-center group-hover:scale-105 group-hover:border-[#E91E63]/50 group-hover:from-[#FFF0F5] group-hover:to-[#FFE4EE] transition-all duration-200">
+                      <span className="font-display font-extrabold text-xs tracking-wider text-[#171717] group-hover:text-[#E91E63] transition-colors">
+                        {getBrandInitials(brand.name)}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -323,17 +338,20 @@ export const Brands: React.FC = () => {
               <div className={`h-16 w-20 flex items-center justify-center p-2 rounded-xl border shrink-0 ${
                 activeBrandModal.id === 'kelloggs'
                   ? 'bg-[#D0021B] border-[#D0021B]'
-                  : 'bg-neutral-50 border-neutral-200'
+                  : 'bg-white border-neutral-200'
               }`}>
-                {activeBrandModal.logoUrl ? (
+                {activeBrandModal.logoUrl && !failedImages[activeBrandModal.id] ? (
                   <img
                     src={activeBrandModal.logoUrl}
                     alt={`${activeBrandModal.name} logo`}
                     className="max-h-12 max-w-full object-contain"
+                    onError={() => handleImageError(activeBrandModal.id)}
                   />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-neutral-200 flex items-center justify-center text-[#171717] font-bold text-sm">
-                    {activeBrandModal.name.slice(0, 2).toUpperCase()}
+                  <div className="w-11 h-11 rounded-full bg-gradient-to-br from-[#FFF5F8] via-[#FAF7F8] to-[#F5EEF2] border border-[#E91E63]/25 shadow-2xs flex items-center justify-center">
+                    <span className="font-display font-extrabold text-xs tracking-wider text-[#171717]">
+                      {getBrandInitials(activeBrandModal.name)}
+                    </span>
                   </div>
                 )}
               </div>

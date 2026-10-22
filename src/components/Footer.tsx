@@ -137,6 +137,13 @@ export const Footer: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* Developer Credit */}
+        <div className="mt-6 pt-4 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
+          <p>
+            Built by <span className="font-semibold text-[#E91E63]">MSR Solution</span>
+          </p>
+        </div>
       </div>
     </footer>
   );
